@@ -12,8 +12,8 @@ A snakemake workflow to run trimmomatic QC and bowtie mapping
 
 Run on the HPC
 ```
-snakemake -j 4 -s analysis --cluster-config config.yaml --cluster-config cluster.json --cluster "sbatch analysis "
-source snakemake-5.7.4; sabtch -o logfile -J snakemake-workflow --wrap "snakemake -j 4 -s analysis -p "
+1) snakemake -j 4 -s analysis --cluster-config config.yaml --cluster-config cluster.json --cluster "sbatch analysis "
+2) source snakemake-5.7.4; sabtch -o logfile -J snakemake-workflow --wrap "snakemake -j 4 -s analysis -p "
 ```
 
 or on the local machine
