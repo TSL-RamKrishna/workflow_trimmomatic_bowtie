@@ -12,6 +12,10 @@ print('samples are ', list(analysis_samples))
 #     print(sample)
 
 
+rule all:
+    input:
+        expand("results/bowtie_mapping/{sample}/alignment_sorted.bam",
+                sample=analysis_samples)
 
 rule trimmomatic:
     input:
@@ -38,18 +42,18 @@ rule bowtie_indexing:
 rule bowtie_mapping:
     input:
         R1="results/trimmomatic/{sample}/R1_paired.fastq",
-        R2="results/trimmomatic/{sample}/R2_paired.fastq"
+        R2="results/trimmomatic/{sample}/R2_paired.fastq",
         index=[config["Reference"] + ".1.bt2",
-	config["Reference"] + ".2.bt2",
-	config["Reference"] + ".3.bt2",
-	config["Reference"] + ".4.bt2",
-	config["Reference"] + ".rev.1.bt2",
-	config["Reference"] + ".rev.2.bt2"]
+	           config["Reference"] + ".2.bt2",
+	           config["Reference"] + ".3.bt2",
+	           config["Reference"] + ".4.bt2",
+	           config["Reference"] + ".rev.1.bt2",
+	           config["Reference"] + ".rev.2.bt2"]
     output:
         temp("results/bowtie_mapping/{sample}/alignment.sam")
 
     shell:
-        "source bowtie2-2.3.5; bowtie2 -x {input.index} --maxins 1000  -1 {input.R1} -2 {input.R2} -S {output}"
+        "source bowtie2-2.3.5; bowtie2 -x {reference} --maxins 1000  -1 {input.R1} -2 {input.R2} -S {output}"
 
 rule samtobam:
 	input: "results/bowtie_mapping/{sample}/alignment.sam"
