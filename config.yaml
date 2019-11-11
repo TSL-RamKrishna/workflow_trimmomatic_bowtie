@@ -1,0 +1,8 @@
+Reference: /hpc-home/shrestha/01_refseq.fasta
+Samples:
+    sampleA:
+        R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTHLMDSXX_L1_1.fq.gz
+        R2: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTHLMDSXX_L1_2.fq.gz
+    sampleB:
+        R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_1.fq.gz
+        R2: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_2.fq.gz
