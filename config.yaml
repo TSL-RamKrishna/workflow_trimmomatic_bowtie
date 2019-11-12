@@ -1,4 +1,4 @@
-Reference: /hpc-home/shrestha/01_refseq.fasta
+Reference: /tsl/data/sequences/plants/s_tuberosum/solanum_tuberosum_RH_bacs.fna
 Samples:
     sampleA:
         R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTHLMDSXX_L1_1.fq.gz
@@ -6,3 +6,5 @@ Samples:
     sampleB:
         R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_1.fq.gz
         R2: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_2.fq.gz
+
+projectdir: /tsl/scratch/shrestha/sebastian/sp1102
