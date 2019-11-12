@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import os
+# from snakemake.logging import setup_logger
+# setup_logger(debug=True, printshellcmds=True)
 
 configfile: "config.yaml"
 
@@ -7,15 +10,12 @@ configfile: "config.yaml"
 
 reference=config['Reference']
 analysis_samples = config['Samples'].keys()
-print('samples are ', list(analysis_samples))
-# for sample in analysis_samples:
-#     print(sample)
+os.chdir(config['projectdir'])
 
 
 rule all:
     input:
-        expand("results/bowtie_mapping/{sample}/alignment_sorted.bam",
-                sample=analysis_samples)
+        expand("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam", projectdir=config['projectdir'],                sample=analysis_samples)
 
 rule trimmomatic:
     input:
@@ -24,48 +24,62 @@ rule trimmomatic:
         # R1=config['Samples'][sample]['R1'],
         # R2=config['Samples'][sample]['R2']
     output:
-        R1Paired="results/trimmomatic/{sample}/R1_paired.fastq",
-        R1Unpaired="results/trimmomatic/{sample}/R1_unpaired.fastq",
-        R2Paired="results/trimmomatic/{sample}/R2_paired.fastq",
-        R2Unpaired="results/trimmomatic/{sample}/R2_unpaired.fastq"
+        R1Paired="{projectdir}/results/trimmomatic/{sample}/R1_paired.fastq",
+        R1Unpaired="{projectdir}/results/trimmomatic/{sample}/R1_unpaired.fastq",
+        R2Paired="{projectdir}/results/trimmomatic/{sample}/R2_paired.fastq",
+        R2Unpaired="{projectdir}/results/trimmomatic/{sample}/R2_unpaired.fastq"
     message:
         'Running Quality Control using Trimmomatic '
-    shell:
-        "source trimmomatic-0.36; trimmomatic PE -threads 4  -phred64 -trimlog logs/{wildcards.sample}/trimmomatic.log -validatePairs {input.R1} {input.R2} {output} SLIDINGWINDOW:4:20 MINLEN:30"
+    log: "{projectdir}/logs/{sample}/trimmomatic.log"
+    benchmark: "{projectdir}/benchmarks/{sample}.trimmomatic.benchmark.txt"
+    threads : 2
+    shell: "trimmomatic PE -threads 4  -phred64 -trimlog {log} -validatePairs {input.R1} {input.R2} {output} SLIDINGWINDOW:4:20 MINLEN:30"
 
 rule bowtie_indexing:
     input: config['Reference']
     output: config["Reference"] + ".1.bt2", config["Reference"] + ".2.bt2", config["Reference"] + ".3.bt2", config["Reference"] + ".4.bt2", config["Reference"] + ".rev.1.bt2", config["Reference"] + ".rev.2.bt2"
-    shell:
-        "bowtie2-build -f {input} {input}"
+    message: "Bowtie Indexing for reference"
+    threads: 4
+    benchmark: "benchmarks/reference.bowtie2index.benchmark.txt"
+    conda: "envs/bowtie2.yaml"
+    shell: "bowtie2-build -f {input} {input}"
 
 rule bowtie_mapping:
     input:
-        R1="results/trimmomatic/{sample}/R1_paired.fastq",
-        R2="results/trimmomatic/{sample}/R2_paired.fastq",
-        index=[config["Reference"] + ".1.bt2",
-	           config["Reference"] + ".2.bt2",
-	           config["Reference"] + ".3.bt2",
-	           config["Reference"] + ".4.bt2",
-	           config["Reference"] + ".rev.1.bt2",
-	           config["Reference"] + ".rev.2.bt2"]
-    output:
-        temp("results/bowtie_mapping/{sample}/alignment.sam")
-
+        R1="{projectdir}/results/trimmomatic/{sample}/R1_paired.fastq",
+        R2="{projectdir}/results/trimmomatic/{sample}/R2_paired.fastq",
+        index=[config["Reference"] + ".1.bt2", config["Reference"] + ".2.bt2", config["Reference"] + ".3.bt2", config["Reference"] + ".4.bt2", config["Reference"] + ".rev.1.bt2", config["Reference"] + ".rev.2.bt2"]
+    output: temp("{projectdir}/results/bowtie_mapping/{sample}/alignment.sam")
+    message: "Aligning reads with Bowtie2"
+    benchmark: "{projectdir}/benchmarks/{sample}.bowtie2.benchmark.txt"
+    threads : 4
+    conda:
+        "envs/bowtie2.yaml"
     shell:
-        "source bowtie2-2.3.5; bowtie2 -x {reference} --maxins 1000  -1 {input.R1} -2 {input.R2} -S {output}"
+        "bowtie2 -x {reference} --maxins 1000  -1 {input.R1} -2 {input.R2} -S {output}"
 
 rule samtobam:
-	input: "results/bowtie_mapping/{sample}/alignment.sam"
-	output: temp("results/bowtie_mapping/{sample}/alignment.bam")
-	shell: "source samtools-1.9; samtools view -b -T {reference} -o {output} {input}"
+    input: "{projectdir}/results/bowtie_mapping/{sample}/alignment.sam"
+    output: temp("{projectdir}/results/bowtie_mapping/{sample}/alignment.bam")
+    message:"Converting sam to bam for"
+    threads: 2
+    benchmark: "{projectdir}/benchmarks/{sample}.samtobam.benchmark.txt"
+    conda: "envs/samtools.yaml"
+	shell: "samtools view -b -T {reference} -o {output} {input}"
 
 rule sort_bam:
-    input: "results/bowtie_mapping/{sample}/alignment.bam"
-    output: protected("results/bowtie_mapping/{sample}/alignment_sorted.bam")
-    shell: "source samtools-1.9; samtools sort -l 5 -o {output} {input}"   # -l option is compress level.
+    input: "{projectdir}/results/bowtie_mapping/{sample}/alignment.bam"
+    output: protected("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam")
+    message: "Sorting BAM file"
+    benchmark: "{projectdir}/benchmarks/{sample}.bamsort.benchmark.txt"
+    conda: "envs/samtools.yaml"
+    shell: "samtools sort -l 5 -o {output} {input}"   # -l option is compress level.
 
 rule analysis:
     input:
-        expand("results/bowtie_mapping/{sample}/alignment_sorted.bam",
+        expand("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam", projectdir=config['projectdir'],
                 sample=analysis_samples)
+
+onsuccess: "snakemake has completed sucessfully"
+
+onfailure: "snakemake has failed. Please talk to this worflow programmer to resolve the failure"
