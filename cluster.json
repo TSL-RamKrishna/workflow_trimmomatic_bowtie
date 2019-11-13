@@ -1,20 +1,16 @@
 {
-    "__default__":
-    {
-        "partition": "tsl-long"
-        "cpus" : "4"
-        "mem": "60G"
-    }
+	"__default__": {
+		"partition": "tsl-long",
+		"cpus": 4,
+		"memory": "10G"
+	},
+	"trimmomatic": {
+		"memory": "10G",
+		"cpus": 2
+	},
+	"bowtie_mapping": {
+		"memory": "50G",
+		"cpus": 4
+	}
 
-    "trimmomatic":
-    {
-        "mem":"10G"
-        "cpus": "2"
-    }
-
-    "bowtie_mapping":
-    {
-        "mem": "60G"
-        "cpus": "4"
-    }
 }
