@@ -11,7 +11,7 @@ configfile: "config.yaml"
 reference=config['Reference']
 analysis_samples = config['Samples'].keys()
 os.chdir(config['projectdir'])
-
+workdir: config['projectdir']
 
 rule all:
     input:
@@ -72,6 +72,7 @@ rule sort_bam:
     output: protected("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam")
     message: "Sorting BAM file"
     benchmark: "{projectdir}/benchmarks/{sample}.bamsort.benchmark.txt"
+    threads: 4
     conda: "envs/samtools.yaml"
     shell: "samtools sort -l 5 -o {output} {input}"   # -l option is compress level.
 
