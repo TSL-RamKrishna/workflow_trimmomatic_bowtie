@@ -33,7 +33,7 @@ rule trimmomatic:
     log: "{projectdir}/logs/{sample}/trimmomatic.log"
     benchmark: "{projectdir}/benchmarks/{sample}.trimmomatic.benchmark.txt"
     threads : 2
-    shell: "trimmomatic PE -threads 4  -phred64 -trimlog {log} -validatePairs {input.R1} {input.R2} {output} SLIDINGWINDOW:4:20 MINLEN:30"
+    shell: "trimmomatic PE -threads 4  -phred64 -trimlog {log} {input.R1} {input.R2} {output} SLIDINGWINDOW:4:20 MINLEN:30"
 
 rule bowtie_indexing:
     input: config['Reference']
@@ -50,6 +50,7 @@ rule bowtie_mapping:
         R2="{projectdir}/results/trimmomatic/{sample}/R2_paired.fastq",
         index=[config["Reference"] + ".1.bt2", config["Reference"] + ".2.bt2", config["Reference"] + ".3.bt2", config["Reference"] + ".4.bt2", config["Reference"] + ".rev.1.bt2", config["Reference"] + ".rev.2.bt2"]
     output: temp("{projectdir}/results/bowtie_mapping/{sample}/alignment.sam")
+    log: "{projectdir}/logs/{sample}/bowtie_mapping.log"
     message: "Aligning reads with Bowtie2"
     benchmark: "{projectdir}/benchmarks/{sample}.bowtie2.benchmark.txt"
     threads : 4
@@ -61,6 +62,7 @@ rule bowtie_mapping:
 rule samtobam:
     input: "{projectdir}/results/bowtie_mapping/{sample}/alignment.sam"
     output: temp("{projectdir}/results/bowtie_mapping/{sample}/alignment.bam")
+    log: "{projectdir}/logs/{sample}/samtobam.log"
     message:"Converting sam to bam for"
     threads: 2
     benchmark: "{projectdir}/benchmarks/{sample}.samtobam.benchmark.txt"
@@ -70,11 +72,12 @@ rule samtobam:
 rule sort_bam:
     input: "{projectdir}/results/bowtie_mapping/{sample}/alignment.bam"
     output: protected("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam")
+    log: "{projectdir}/logs/{sample}/sort_bam.log"
     message: "Sorting BAM file"
     benchmark: "{projectdir}/benchmarks/{sample}.bamsort.benchmark.txt"
     threads: 4
     conda: "envs/samtools.yaml"
-    shell: "samtools sort -l 5 -o {output} {input}"   # -l option is compress level.
+    shell: "samtools sort -l 5 -o {output} {input} && samtools index {output}"   # -l option is compress level.
 
 rule analysis:
     input:
