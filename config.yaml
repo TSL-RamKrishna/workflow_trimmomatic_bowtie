@@ -1,10 +1,9 @@
-Reference: /tsl/data/sequences/plants/s_tuberosum/solanum_tuberosum_RH_bacs.fna
+Reference: /tsl/data/dropbox/Sebastian_new_data/SP1102_minion.fasta
 Samples:
-    sampleA:
-        R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTHLMDSXX_L1_1.fq.gz
-        R2: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTHLMDSXX_L1_2.fq.gz
-    sampleB:
-        R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_1.fq.gz
-        R2: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_2.fq.gz
-
+        sampleA:
+                R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTHLMDSXX_L1_1.fq.gz
+                R2: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTHLMDSXX_L1_2.fq.gz
+        sampleB:
+                R1: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_1.fq.gz
+                R2: /tsl/data/reads/jjones/whole_genome_shotgun_of_solanum_americanum/sp1102_d2/sp1102_d2/raw/D_2_FDPL190728232-1a_HTM22DSXX_L4_2.fq.gz
 projectdir: /tsl/scratch/shrestha/sebastian/sp1102

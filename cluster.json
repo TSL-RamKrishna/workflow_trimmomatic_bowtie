@@ -4,6 +4,10 @@
 		"cpus": 4,
 		"memory": "10G"
 	},
+	"bowtie_indexing": {
+		"cpus": 4,
+		"memory": "10G"
+	},
 	"trimmomatic": {
 		"memory": "10G",
 		"cpus": 2
