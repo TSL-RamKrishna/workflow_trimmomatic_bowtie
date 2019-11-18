@@ -24,16 +24,16 @@ rule trimmomatic:
         # R1=config['Samples'][sample]['R1'],
         # R2=config['Samples'][sample]['R2']
     output:
-        R1Paired="{projectdir}/results/trimmomatic/{sample}/R1_paired.fastq",
-        R1Unpaired="{projectdir}/results/trimmomatic/{sample}/R1_unpaired.fastq",
-        R2Paired="{projectdir}/results/trimmomatic/{sample}/R2_paired.fastq",
-        R2Unpaired="{projectdir}/results/trimmomatic/{sample}/R2_unpaired.fastq"
+        R1Paired="{projectdir}/results/trimmomatic/{sample}/R1_paired.fastq.gz",
+        R1Unpaired="{projectdir}/results/trimmomatic/{sample}/R1_unpaired.fastq.gz",
+        R2Paired="{projectdir}/results/trimmomatic/{sample}/R2_paired.fastq.gz",
+        R2Unpaired="{projectdir}/results/trimmomatic/{sample}/R2_unpaired.fastq.gz"
     message:
         'Running Quality Control using Trimmomatic '
     log: "{projectdir}/logs/{sample}/trimmomatic.log"
     benchmark: "{projectdir}/benchmarks/{sample}.trimmomatic.benchmark.txt"
-    threads : 2
-    shell: "trimmomatic PE -threads 4  -phred64 -trimlog {log} {input.R1} {input.R2} {output} SLIDINGWINDOW:4:20 MINLEN:30"
+    threads : 4
+    shell: "trimmomatic PE -threads 4  -phred33 -trimlog {log} {input.R1} {input.R2} {output} SLIDINGWINDOW:4:20 MINLEN:30"
 
 rule bowtie_indexing:
     input: config['Reference']
@@ -46,8 +46,8 @@ rule bowtie_indexing:
 
 rule bowtie_mapping:
     input:
-        R1="{projectdir}/results/trimmomatic/{sample}/R1_paired.fastq",
-        R2="{projectdir}/results/trimmomatic/{sample}/R2_paired.fastq",
+        R1="{projectdir}/results/trimmomatic/{sample}/R1_paired.fastq.gz",
+        R2="{projectdir}/results/trimmomatic/{sample}/R2_paired.fastq.gz",
         index=[config["Reference"] + ".1.bt2", config["Reference"] + ".2.bt2", config["Reference"] + ".3.bt2", config["Reference"] + ".4.bt2", config["Reference"] + ".rev.1.bt2", config["Reference"] + ".rev.2.bt2"]
     output: temp("{projectdir}/results/bowtie_mapping/{sample}/alignment.sam")
     log: "{projectdir}/logs/{sample}/bowtie_mapping.log"
@@ -67,7 +67,7 @@ rule samtobam:
     threads: 2
     benchmark: "{projectdir}/benchmarks/{sample}.samtobam.benchmark.txt"
     conda: "envs/samtools.yaml"
-	shell: "samtools view -b -T {reference} -o {output} {input}"
+    shell: "samtools view -b -T {reference} -o {output} {input}"
 
 rule sort_bam:
     input: "{projectdir}/results/bowtie_mapping/{sample}/alignment.bam"
