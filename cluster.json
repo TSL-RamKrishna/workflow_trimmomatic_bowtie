@@ -13,7 +13,7 @@
 		"cpus": 2
 	},
 	"bowtie_mapping": {
-		"memory": "50G",
+		"memory": "60G",
 		"cpus": 4
 	}
 
