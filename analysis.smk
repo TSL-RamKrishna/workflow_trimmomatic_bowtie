@@ -3,7 +3,7 @@ import os
 # from snakemake.logging import setup_logger
 # setup_logger(debug=True, printshellcmds=True)
 
-configfile: "config.yaml"
+configfile: "./config.yaml"
 
 #print(config['Samples']['sampleA']['R1'])
 #print(config['Samples']['sampleB']['R1'])
@@ -11,7 +11,8 @@ configfile: "config.yaml"
 reference=config['Reference']
 analysis_samples = config['Samples'].keys()
 os.chdir(config['projectdir'])
-workdir: config['projectdir']
+projectdir = config['projectdir']
+print("Working directory ", projectdir)
 
 rule all:
     input:
@@ -79,10 +80,21 @@ rule sort_bam:
     conda: "envs/samtools.yaml"
     shell: "samtools sort -l 5 -o {output} {input} && samtools index {output}"   # -l option is compress level.
 
+rule merge_bamfiles:
+    input: expand(["{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam"], sample=analysis_samples, projectdir=projectdir)
+    output: "{projectdir}/results/bowtie_mapping/merged_samples/merged.bam"
+    log: "{projectdir}/logs/merged_samples/bamfiles_merged.log"
+    message: "Merging bam files"
+    threads: 2
+    benchmark: "{projectdir}/benchmarks/merged_samples/merging_bamfiles.txt"
+    shell: "samtools merge --reference {reference} {output} {input}"
+
+
 rule analysis:
     input:
-        expand("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam", projectdir=config['projectdir'],
-                sample=analysis_samples)
+        # expand("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam", projectdir=config['projectdir'],
+        #         sample=analysis_samples)
+        "{projectdir}/results/bowtie_mapping/merged_samples/merged.bam".format(projectdir=projectdir)
 
 onsuccess: "snakemake has completed sucessfully"
 
