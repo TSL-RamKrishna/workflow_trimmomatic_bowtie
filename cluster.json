@@ -2,7 +2,7 @@
 	"__default__": {
 		"partition": "tsl-long",
 		"cpus": 4,
-		"memory": "10G"
+		"memory": "80G"
 	},
 	"bowtie_indexing": {
 		"cpus": 4,
@@ -15,6 +15,11 @@
 	"bowtie_mapping": {
 		"memory": "60G",
 		"cpus": 4
+	},
+	"assembly_polish": {
+                "memory": "200G",
+                "cpus": 2
 	}
+
 
 }
