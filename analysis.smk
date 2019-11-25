@@ -86,15 +86,22 @@ rule merge_bamfiles:
     log: "{projectdir}/logs/merged_samples/bamfiles_merged.log"
     message: "Merging bam files"
     threads: 2
-    benchmark: "{projectdir}/benchmarks/merged_samples/merging_bamfiles.txt"
-    shell: "samtools merge --reference {reference} {output} {input}"
+    benchmark: "{projectdir}/benchmarks/merging_bamfiles.benchmark.txt"
+    shell: "samtools merge --reference {reference} {output} {input} && samtools index {output}"
 
+rule assembly_polish:
+    input:
+        assembly = config['Reference'],
+        bamfile = "{projectdir}/results/bowtie_mapping/merged_samples/merged.bam"
+    output: "{projectdir}/results/pilon/pilon_polished_assembly.fasta"
+    log: "{projectdir}/logs/assembly_polish/polished_assembly.log"
+    message: "Polishing asssembly"
+    threads: 4
+    benchmark: "{projectdir}/benchmarks/assembly_polish.benchmark.txt"
+    shell: "pilon --genome {input.assembly} --output pilon_polished_assembly --outdir {projectdir}/results/pilon/ --changes --frags {input.bamfile} --fix snps,indels,gaps --duplicates --diploid"
 
 rule analysis:
-    input:
-        # expand("{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam", projectdir=config['projectdir'],
-        #         sample=analysis_samples)
-        "{projectdir}/results/bowtie_mapping/merged_samples/merged.bam".format(projectdir=projectdir)
+    input: "{projectdir}/results/pilon/pilon_polished_assembly.fasta".format(projectdir=projectdir)
 
 onsuccess: "snakemake has completed sucessfully"
 
