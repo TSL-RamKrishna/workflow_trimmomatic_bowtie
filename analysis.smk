@@ -80,6 +80,10 @@ rule sort_bam:
     conda: "envs/samtools.yaml"
     shell: "samtools sort -l 5 -o {output} {input} && samtools index {output}"   # -l option is compress level.
 
+rule run_bowtie:
+    input: expand(["{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam"], projectdir=projectdir, sample=analysis_samples)
+
+
 rule merge_bamfiles:
     input: expand(["{projectdir}/results/bowtie_mapping/{sample}/alignment_sorted.bam"], sample=analysis_samples, projectdir=projectdir)
     output: "{projectdir}/results/bowtie_mapping/merged_samples/merged.bam"
@@ -88,6 +92,9 @@ rule merge_bamfiles:
     threads: 2
     benchmark: "{projectdir}/benchmarks/merging_bamfiles.benchmark.txt"
     shell: "samtools merge --reference {reference} {output} {input} && samtools index {output}"
+
+rule run_merge_bam:
+    input: "{projectdir}/results/bowtie_mapping/merged_samples/merged.bam".format(projectdir=projectdir)
 
 rule assembly_polish:
     input:
