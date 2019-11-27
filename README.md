@@ -27,7 +27,7 @@ snakemake -j 4 -s analysis.smk -p analysis
 ## How to run bowtie step and bam merge step indivitually
 
 ```
-sbatch -o snakemake.log -J snakemake-workflow --wrap "snakemake -s run_bowtie  --cluster-config cluster.json --cluster-config config.yaml  --cluster 'sbatch --mem {cluster.memory} --cpus {cluster.cpus}'  -p --jobs 4  --latency-wait 60 " 
+sbatch -o snakemake.log -J snakemake-workflow --wrap "snakemake -s analysis.smk run_bowtie  --cluster-config cluster.json --cluster-config config.yaml  --cluster 'sbatch --mem {cluster.memory} --cpus {cluster.cpus}'  -p --jobs 4  --latency-wait 60 " 
 
-sbatch -o snakemake.log -J snakemake-workflow --wrap "snakemake -s run_merge_bam --cluster-config cluster.json --cluster-config config.yaml  --cluster 'sbatch --mem {cluster.memory} --cpus {cluster.cpus}'  -p --jobs 4  --latency-wait 60 " 
+sbatch -o snakemake.log -J snakemake-workflow --wrap "snakemake -s analysis.smk run_merge_bam --cluster-config cluster.json --cluster-config config.yaml  --cluster 'sbatch --mem {cluster.memory} --cpus {cluster.cpus}'  -p --jobs 4  --latency-wait 60 " 
 ```
