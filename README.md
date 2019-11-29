@@ -7,6 +7,7 @@ A snakemake workflow to run trimmomatic QC and bowtie mapping
 2) python v3.6+ (source python-3.6.1)
 3) trimmomatic v0.36
 4) bowtie2 v2.3.5
+5) samtools v1.9
 
 
 ## How to run
