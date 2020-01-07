@@ -8,6 +8,7 @@ A snakemake workflow to run trimmomatic QC and bowtie mapping
 3) trimmomatic v0.36
 4) bowtie2 v2.3.5
 5) pilon-1.22
+6) samtools v1.9
 
 ## How to run
 
